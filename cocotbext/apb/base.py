@@ -43,6 +43,16 @@ from cocotb_coverage.crv import Randomized
 pwrite = [  'READ',
             'WRITE'   ]
 
+apb_mandatory_signals = [ "PSEL",
+                          "PWRITE",
+                          "PENABLE",
+                          "PADDR",
+                          "PWDATA",
+                          "PRDATA",
+                          "PREADY" ]
+
+apb_optional_signals = [ "PSLVERR",
+                         "PSTRB" ]
 
 
 class APBTransaction(Randomized):
@@ -178,7 +188,7 @@ class APBMonitor(BusMonitor):
         with the observed data
     """
 
-    def __init__(self, entity, name, clock, pkg=False, signals=None, bus_width=32, **kwargs):
+    def __init__(self, entity, name, clock, pkg=False, signals=None, uppercase=True, bus_width=32, **kwargs):
 
         # has the signals been explicitely defined?
         if signals:
@@ -190,26 +200,20 @@ class APBMonitor(BusMonitor):
             if pkg:
                 self._signals = {}
                 for signal_name in ['psel', 'pwrite', 'penable', 'paddr', 'pwdata', 'pstrb']:
-                    self._signals[signal_name.upper()] = name + '_h2d_i.' + signal_name
+                    self._signals[signal_name.upper()] = name + '_h2d.' + signal_name
 
                 for signal_name in ['prdata', 'pready', 'pslverr']:
-                    self._signals[signal_name.upper()] = name + '_d2h_o.' + signal_name
+                    self._signals[signal_name.upper()] = name + '_d2h.' + signal_name
                 name = None
 
             # just use the default APB names
             else:
-                self._signals = [
-                    "PSEL",
-                    "PWRITE",
-                    "PENABLE",
-                    "PADDR",
-                    "PWDATA",
-                    "PRDATA",
-                    "PREADY"]
-
-                self._optional_signals = [
-                    "PSLVERR",
-                    "PSTRB"]
+                if uppercase:
+                    self._signals          = apb_mandatory_signals
+                    self._optional_signals = apb_optional_signals
+                else:
+                    self._signals          = {signal:signal.lower() for signal in apb_mandatory_signals}
+                    self._optional_signals = {signal:signal.lower() for signal in apb_optional_signals}
 
         BusMonitor.__init__(self, entity, name, clock, **kwargs)
         self.clock = clock
@@ -279,7 +283,7 @@ class APBMasterDriver(BusDriver):
         Drives data onto the APB bus to setup for read/write to slave devices.
     """
 
-    def __init__(self, entity, name, clock, pkg=False, signals=None, **kwargs):
+    def __init__(self, entity, name, clock, pkg=False, signals=None, uppercase=True, **kwargs):
 
         # has the signals been explicitely defined?
         if signals:
@@ -291,31 +295,24 @@ class APBMasterDriver(BusDriver):
             if pkg:
                 self._signals = {}
                 for signal_name in ['psel', 'pwrite', 'penable', 'paddr', 'pwdata', 'pstrb']:
-                    self._signals[signal_name.upper()] = name + '_h2d_i.' + signal_name
+                    self._signals[signal_name.upper()] = name + '_h2d.' + signal_name
 
                 for signal_name in ['prdata', 'pready', 'pslverr']:
-                    self._signals[signal_name.upper()] = name + '_d2h_o.' + signal_name
+                    self._signals[signal_name.upper()] = name + '_d2h.' + signal_name
                 name = None
 
 
             # just use the default APB names
             else:
-                self._signals = [
-                    "PSEL",
-                    "PWRITE",
-                    "PENABLE",
-                    "PADDR",
-                    "PWDATA",
-                    "PRDATA",
-                    "PREADY"]
-
-                self._optional_signals = [
-                    "PSLVERR",
-                    "PSTRB"]
-
+                if uppercase:
+                    self._signals          = apb_mandatory_signals
+                    self._optional_signals = apb_optional_signals
+                else:
+                    self._signals          = {signal:signal.lower() for signal in apb_mandatory_signals}
+                    self._optional_signals = {signal:signal.lower() for signal in apb_optional_signals}
 
         # inheret the bus driver
-        BusDriver.__init__(self, entity, name, clock, bus_separator='.', **kwargs)
+        BusDriver.__init__(self, entity, name, clock, **kwargs)
         self.clock = clock
 
         # initialise all outputs to zero
@@ -451,7 +448,7 @@ class APBSlaveDriver(BusMonitor):
     """
 
 
-    def __init__(self, entity, name, clock, registers, signals=None, pkg=False,
+    def __init__(self, entity, name, clock, registers, signals=None, pkg=False, uppercase=True,
                     random_ready_probability=0, random_error_probability=0, **kwargs):
 
         # has the signals been explicitely defined?
@@ -473,18 +470,13 @@ class APBSlaveDriver(BusMonitor):
 
             # just use the default APB names
             else:
-                self._signals = [
-                    "PSEL",
-                    "PWRITE",
-                    "PENABLE",
-                    "PADDR",
-                    "PWDATA",
-                    "PRDATA",
-                    "PREADY"]
+                if uppercase:
+                    self._signals          = apb_mandatory_signals
+                    self._optional_signals = apb_optional_signals
+                else:
+                    self._signals          = {signal:signal.lower() for signal in apb_mandatory_signals}
+                    self._optional_signals = {signal:signal.lower() for signal in apb_optional_signals}
 
-                self._optional_signals = [
-                    "PSLVERR",
-                    "PSTRB"]
 
         BusMonitor.__init__(self, entity, name, clock, **kwargs)
         self.clock = clock
