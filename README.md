@@ -109,10 +109,10 @@ Which will print all the transaction paramters:
 ```
 # ------------------------------------------------------------------------------------------------------------------------
 # APB Transaction - Started at 3400 ns
-# 
+#
 #   Address:   0x00000000
 #   Direction: READ
-#   Data:      0x12345678 
+#   Data:      0x12345678
 # ------------------------------------------------------------------------------------------------------------------------
 ```
 
@@ -186,7 +186,7 @@ The APB master driver can initiate APB transaction on the bus to perform read/wr
 To create a master:
 
 ```python
-master  = ahb.AHBMasterDriver(dut, "APB", dut.APB_PCLK)
+master  = apb.APBMasterDriver(dut, "APB", dut.APB_PCLK)
 ```
 
 The `dut` is the standard CocoTB DUT handler. The `APB` string defines the signal name prefix used to find the bus. `dut.APB_PCLK` defines the clock for the bus.
@@ -240,10 +240,10 @@ To create a master:
 
 ```python
 slave_registers = [_ for _ in range(32)]
-slave_driver  = apb.APBSlaveDriver(dut, "AHB", dut.APB_PCLK, registers=slave_registers)
+slave_driver  = apb.APBSlaveDriver(dut, "APB", dut.APB_PCLK, registers=slave_registers)
 ```
 
-The `dut` is the standard CocoTB DUT handler. The `APB` string defines the signal name prefix used to find the bus. `dut.APB_PCLK` defines the clock for the bus. A register space should be created as a list of integers - this can be set all zeros or other values. During read and write operations the slave will expose this list to the AHB bus as a slave device.
+The `dut` is the standard CocoTB DUT handler. The `APB` string defines the signal name prefix used to find the bus. `dut.APB_PCLK` defines the clock for the bus. A register space should be created as a list of integers - this can be set all zeros or other values. During read and write operations the slave will expose this list to the APB bus as a slave device.
 
 The signal names used are listed below:
 
