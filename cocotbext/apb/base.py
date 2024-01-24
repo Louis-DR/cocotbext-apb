@@ -265,7 +265,7 @@ class APBMonitor(BusMonitor):
                 transaction.start_time = cocotb.utils.get_sim_time('ns')
 
                 # find out if there's an error from the slave
-                if hasattr(bus,'PSLVERR') and self.bus.PSLVERR.value.integer:
+                if hasattr(self.bus,'PSLVERR') and self.bus.PSLVERR.value.integer:
                     transaction.error = True
 
                 # signal to the callback
@@ -416,7 +416,7 @@ class APBMasterDriver(BusDriver):
                 if self.bus.PREADY.value.integer:
 
                     # check if the slave is asserting an error
-                    if hasattr(bus,'PSLVERR') and self.bus.PSLVERR.value.integer:
+                    if hasattr(self.bus,'PSLVERR') and self.bus.PSLVERR.value.integer:
                         current_transaction.error = True
 
                     # if this is a read we should sample the data
@@ -484,7 +484,7 @@ class APBSlaveDriver(BusMonitor):
         # initialise all outputs to zero
         self.bus.PRDATA.setimmediatevalue(0)
         self.bus.PREADY.setimmediatevalue(0)
-        if hasattr(bus,'PSLVERR'):
+        if hasattr(self.bus,'PSLVERR'):
             self.bus.PSLVERR.setimmediatevalue(0)
 
         # store the default registers value
@@ -544,14 +544,14 @@ class APBSlaveDriver(BusMonitor):
                         # error in transaction?
                         if random.random() < self.random_error_probability:
                             self.bus.PRDATA.value = 0x00000000
-                            if hasattr(bus,'PSLVERR'):
+                            if hasattr(self.bus,'PSLVERR'):
                                 self.bus.PSLVERR.value = 1
                         else:
 
                             # is the address within bounds?
                             if word_index-1 > len(self.registers):
                                 self.entity._log.info("APB slave given invalid address. Providing ERROR response.")
-                                if hasattr(bus,'PSLVERR'):
+                                if hasattr(self.bus,'PSLVERR'):
                                     self.bus.PSLVERR.value = 1
 
                             else:
@@ -576,7 +576,7 @@ class APBSlaveDriver(BusMonitor):
                 # reset the bus values
                 self.bus.PRDATA.value = 0
                 self.bus.PREADY.value = 1
-                if hasattr(bus,'PSLVERR'):
+                if hasattr(self.bus,'PSLVERR'):
                     self.bus.PSLVERR.value = 0
                 state = 'IDLE'
 
