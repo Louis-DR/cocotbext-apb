@@ -281,6 +281,15 @@ The simplest form of signal mapping occurs when the RTL signal names match those
 
 However, there are cases where this is not true, the following sections will show how to work around this.
 
+### Lowercase signal names
+
+If your design uses lower case suffixes, you can simply pass `uppercase=False` to the initialization of the APB agents :
+
+```python
+master_driver  = apb.APBMasterDriver(dut, "control", dut.APB_PCLK, uppercase=False)
+```
+
+The signals used will then be `control_paddr`, etc.
 
 ### SystemVerilog Packed Structs
 
