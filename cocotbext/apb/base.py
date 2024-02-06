@@ -359,7 +359,7 @@ class APBMasterDriver(BusDriver):
         #   queue once it gets to them.
         if not hold:
             if not self.transmit_coroutine:
-                self.transmit_coroutine = cocotb.fork(self._transmit_pipeline())
+                self.transmit_coroutine = cocotb.start_soon(self._transmit_pipeline())
 
 
     async def _transmit_pipeline(self):
