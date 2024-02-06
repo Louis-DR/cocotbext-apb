@@ -229,6 +229,7 @@ await ClockCycles(dut.PHB_PCLK, 8)  # transaction occur here
 # master buffer empty all transaction complete
 ```
 
+To wait for the transaction to finish, the `busy_send` function can be used instead.
 
 ## APB Slave
 
